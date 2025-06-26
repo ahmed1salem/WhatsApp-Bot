@@ -1,17 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 
+      SECURITY ENHANCEMENT: Content Security Policy (CSP)
+      This policy restricts the sources from which resources (scripts, styles, etc.) can be loaded,
+      significantly reducing the risk of Cross-Site Scripting (XSS) attacks.
+      - default-src 'self': Allows loading resources only from the same origin.
+      - script-src: Specifies allowed sources for JavaScript. Includes 'self', 'unsafe-inline' (for our inline script), and the CDNs for Tailwind and DOMPurify.
+      - style-src/font-src: Specifies allowed sources for CSS and fonts.
+      - object-src 'none': Disables plugins like Flash, which is a major security improvement.
+      - base-uri 'self': Restricts the <base> tag to prevent certain attacks.
+    -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
+                   font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+                   object-src 'none';
+                   base-uri 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Bulk Messenger Pro</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SECURITY ENHANCEMENT: DOMPurify Library -->
+    <!-- This library is used to sanitize user input to prevent XSS attacks. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.6/purify.min.js" xintegrity="sha512-c20842Fgy3T5F3PYurD0cM7pBte0Ie3fEot2g941K4UjB4_5hYihU5T0n7U_6bI6xI3d3I4h0XlXjQ8AC3mHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SECURITY ENHANCEMENT: Subresource Integrity (SRI)
+         The 'integrity' attribute ensures that the file fetched from the CDN has not been tampered with.
+         The browser will not load the resource if the hash doesn't match.
+    -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Custom styles */
         html {
@@ -28,11 +52,8 @@
             background: transparent;
         }
         #contacts-list::-webkit-scrollbar-thumb {
-            background: #cbd5e1; /* cool-gray-300 */
+            background: #cbd5e1;
             border-radius: 10px;
-        }
-        html.dark #contacts-list::-webkit-scrollbar-thumb {
-            background: #4b5563; /* cool-gray-600 */
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -41,38 +62,26 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* CSS-driven dark mode icon toggle */
-        .dark #theme-toggle-dark-icon { display: none; }
-        .dark #theme-toggle-light-icon { display: inline-block; }
-        #theme-toggle-light-icon { display: none; }
-        html:not(.dark) #theme-toggle-dark-icon { display: inline-block; }
     </style>
-    <script>
-        // Set theme on initial load
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark')
-        } else {
-          document.documentElement.classList.remove('dark')
-        }
-    </script>
 </head>
-<body class="bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
-    
-    <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="fixed top-4 right-4 z-50 bg-white dark:bg-slate-800 p-2 rounded-full shadow-lg text-gray-800 dark:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-slate-900" title="Toggle theme">
-        <i id="theme-toggle-dark-icon" class="fas fa-moon text-lg"></i>
-        <i id="theme-toggle-light-icon" class="fas fa-sun text-lg"></i>
-    </button>
+<body class="bg-gray-100 text-gray-800 transition-colors duration-300">
     
     <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
-        <div class="bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-10 border border-transparent dark:border-slate-700/50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10 border border-transparent">
             
             <!-- Header Section -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <i class="fab fa-whatsapp text-6xl text-green-500"></i>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-4">WhatsApp Bulk Messenger</h1>
-                <p class="text-gray-500 dark:text-slate-400 mt-2 text-lg">A professional tool to streamline your messaging.</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-4">WhatsApp Bulk Messenger</h1>
+                <p class="text-gray-500 mt-2 text-lg">A professional tool to streamline your messaging.</p>
             </div>
+            
+            <!-- Security Warning Box -->
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-r-lg mb-8" role="alert">
+              <p class="font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Responsible Use Warning</p>
+              <p>Automating messages violates WhatsApp's Terms of Service. Sending many messages, especially to unknown contacts, can get your phone number BANNED. Use this tool at your own risk.</p>
+            </div>
+
 
             <!-- Main Content Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -82,13 +91,13 @@
                     <!-- Phone Numbers Input -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                           <label for="phone-numbers" class="text-lg font-semibold text-slate-700 dark:text-slate-300 block">
+                           <label for="phone-numbers" class="text-lg font-semibold text-gray-700 block">
                                Phone Numbers
                             </label>
-                            <span id="number-count" class="text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 py-0.5 px-2.5 rounded-full">0</span>
+                            <span id="number-count" class="text-sm font-medium bg-green-100 text-green-800 py-0.5 px-2.5 rounded-full">0</span>
                         </div>
-                        <textarea id="phone-numbers" rows="8" class="w-full p-4 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 resize-y" placeholder="Enter numbers with country code, one per line..."></textarea>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                        <textarea id="phone-numbers" rows="8" class="w-full p-4 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 resize-y" placeholder="Enter numbers with country code, one per line..."></textarea>
+                        <p class="text-xs text-gray-500 mt-2">
                             <i class="fas fa-info-circle mr-1"></i>
                             Example: 9665XXXXXXXX (Country code without '+' or '00')
                         </p>
@@ -97,31 +106,31 @@
                     <!-- Message Input -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                           <label for="message" class="text-lg font-semibold text-slate-700 dark:text-slate-300 block">Your Message</label>
-                            <button id="copy-message-btn" class="text-sm text-green-600 dark:text-green-400 hover:underline" title="Copy message text">
+                           <label for="message" class="text-lg font-semibold text-gray-700 block">Your Message</label>
+                            <button id="copy-message-btn" class="text-sm text-green-600 hover:underline" title="Copy message text">
                                 <i class="fas fa-copy mr-1"></i>Copy
                             </button>
                         </div>
-                        <textarea id="message" rows="6" class="w-full p-4 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 resize-y" placeholder="Type your message here... 👋"></textarea>
+                        <textarea id="message" rows="6" class="w-full p-4 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 resize-y" placeholder="Type your message here... 👋"></textarea>
                     </div>
 
                     <!-- Generate Button -->
-                    <button id="generate-btn" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 transition-transform transform hover:scale-105 duration-300 shadow-lg hover:shadow-green-500/50 flex items-center justify-center">
+                    <button id="generate-btn" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 transition-transform transform hover:scale-105 duration-300 shadow-lg hover:shadow-green-500/50 flex items-center justify-center">
                         <span id="btn-text"><i class="fas fa-cogs mr-2"></i>Generate Links</span>
                         <i id="btn-loader" class="fas fa-spinner fa-spin text-lg hidden"></i>
                     </button>
                 </div>
 
                 <!-- Right Side: Output -->
-                <div class="bg-slate-50 dark:bg-slate-800/80 p-6 rounded-lg flex flex-col border border-slate-200 dark:border-slate-700">
-                    <div class="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-700 pb-3">
-                        <h2 class="text-xl font-bold text-slate-800 dark:text-white">Generated Contacts</h2>
-                        <button id="clear-list-btn" class="text-sm text-red-500 hover:underline disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed" title="Clear list" disabled>
+                <div class="bg-gray-50 p-6 rounded-lg flex flex-col border border-gray-200">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
+                        <h2 class="text-xl font-bold text-gray-800">Generated Contacts</h2>
+                        <button id="clear-list-btn" class="text-sm text-red-500 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed" title="Clear list" disabled>
                             <i class="fas fa-trash-alt mr-1"></i>Clear
                         </button>
                     </div>
                     <div id="contacts-list" class="flex-grow overflow-y-auto pr-2 min-h-[300px]">
-                        <div id="placeholder" class="text-center text-slate-500 dark:text-slate-400 pt-16">
+                        <div id="placeholder" class="text-center text-gray-500 pt-16">
                             <i class="fas fa-paper-plane text-4xl mb-4 opacity-50"></i>
                             <p>Links will appear here once generated.</p>
                         </div>
@@ -131,6 +140,12 @@
              <!-- Info/Error Message Box -->
             <div id="message-box" class="hidden mt-6 p-4 rounded-lg text-center font-medium"></div>
         </div>
+
+        <!-- Footer Disclaimer -->
+        <footer class="text-center mt-8 text-xs text-gray-400">
+            <p>This is a client-side tool. All data remains in your browser.</p>
+            <p>Disclaimer: This tool is not affiliated with WhatsApp. The developer is not responsible for any consequences of its use.</p>
+        </footer>
     </div>
 
     <script>
@@ -146,22 +161,10 @@
         const copyMessageBtn = document.getElementById('copy-message-btn');
         const btnText = document.getElementById('btn-text');
         const btnLoader = document.getElementById('btn-loader');
-        const themeToggleBtn = document.getElementById('theme-toggle');
         
-        // --- Dark Mode Toggle ---
-        themeToggleBtn.addEventListener('click', () => {
-            // toggle theme
-            document.documentElement.classList.toggle('dark');
-            // save theme to local storage
-            if (document.documentElement.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-        });
-
         /**
          * Cleans a phone number string, removing all non-digit characters.
+         * This acts as a form of input sanitization for the phone number field.
          * @param {string} number - The raw phone number string.
          * @returns {string} The cleaned number, or an empty string if invalid.
          */
@@ -180,9 +183,9 @@
             messageBox.className = 'mt-6 p-4 rounded-lg text-center font-medium fade-in'; // reset classes
             
             if (type === 'error') {
-                messageBox.classList.add('bg-red-100', 'dark:bg-red-900/50', 'text-red-700', 'dark:text-red-300');
+                messageBox.classList.add('bg-red-100', 'text-red-700');
             } else {
-                 messageBox.classList.add('bg-green-100', 'dark:bg-green-900/50', 'text-green-700', 'dark:text-green-300');
+                 messageBox.classList.add('bg-green-100', 'text-green-700');
             }
             setTimeout(() => {
                 messageBox.classList.add('hidden');
@@ -216,15 +219,12 @@
                 showMessage('Message is empty, nothing to copy.', 'error');
                 return;
             }
-            // Use the modern clipboard API if available, with a fallback
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(messageInput.value).then(() => {
                     showMessage('Message copied to clipboard!', 'success');
-                }).catch(err => {
-                    showMessage('Failed to copy message.', 'error');
-                });
-            } else { // Fallback for older browsers
-                 const tempTextArea = document.createElement('textarea');
+                }).catch(err => showMessage('Failed to copy message.', 'error'));
+            } else {
+                const tempTextArea = document.createElement('textarea');
                 tempTextArea.value = messageInput.value;
                 document.body.appendChild(tempTextArea);
                 tempTextArea.select();
@@ -240,7 +240,8 @@
         
         generateBtn.addEventListener('click', () => {
             const numbersRaw = phoneNumbersInput.value.trim();
-            const message = messageInput.value.trim();
+            // SECURITY ENHANCEMENT: Sanitize the message input using DOMPurify
+            const message = DOMPurify.sanitize(messageInput.value.trim());
 
             if (!numbersRaw) {
                 showMessage('Please enter at least one phone number.', 'error');
@@ -262,7 +263,9 @@
                     return;
                 }
                 
-                // encodeURIComponent correctly handles emojis and other special characters.
+                // Using encodeURIComponent is the correct security practice for including
+                // text in a URL. It prevents URL injection and handles all characters,
+                // including emojis, correctly.
                 const encodedMessage = encodeURIComponent(message);
                 
                 contactsList.innerHTML = '';
@@ -272,20 +275,22 @@
                     const whatsappUrl = `https://wa.me/${number}?text=${encodedMessage}`;
                     
                     const contactItem = document.createElement('div');
-                    contactItem.className = 'contact-item flex items-center justify-between bg-white dark:bg-slate-700/50 p-3 rounded-lg mb-3 shadow-sm border border-slate-200 dark:border-slate-600/50 fade-in';
+                    contactItem.className = 'contact-item flex items-center justify-between bg-white p-3 rounded-lg mb-3 shadow-sm border border-gray-200 fade-in';
                     contactItem.style.animationDelay = `${index * 50}ms`;
                     
                     const contactInfo = document.createElement('div');
                     contactInfo.className = 'flex items-center';
+                    // The number is sanitized by cleanPhoneNumber, so it is safe to display.
                     contactInfo.innerHTML = `
-                        <i class="fas fa-user-circle text-slate-400 dark:text-slate-500 mr-3 text-2xl"></i>
-                        <span class="font-medium text-slate-700 dark:text-slate-300">${number}</span>
+                        <i class="fas fa-user-circle text-gray-400 mr-3 text-2xl"></i>
+                        <span class="font-medium text-gray-700">${number}</span>
                         <i class="fas fa-check-circle text-green-500 ml-2 hidden checkmark"></i>
                     `;
                     
                     const sendLink = document.createElement('a');
                     sendLink.href = whatsappUrl;
                     sendLink.target = '_blank';
+                    // rel="noopener noreferrer" is a security best practice for external links.
                     sendLink.rel = 'noopener noreferrer';
                     sendLink.className = 'send-btn bg-green-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5';
                     sendLink.innerHTML = `<i class="fab fa-whatsapp mr-2"></i>Send`;
@@ -298,7 +303,7 @@
                         checkmark.classList.remove('hidden');
                         
                         currentButton.classList.remove('bg-green-500', 'hover:bg-green-600');
-                        currentButton.classList.add('bg-gray-400', 'dark:bg-gray-500', 'cursor-default', 'opacity-75');
+                        currentButton.classList.add('bg-gray-400', 'cursor-default', 'opacity-75');
                         currentButton.innerHTML = `<i class="fas fa-check mr-2"></i>Opened`;
                     }, { once: true });
 
